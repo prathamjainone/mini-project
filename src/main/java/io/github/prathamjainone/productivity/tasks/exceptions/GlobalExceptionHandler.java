@@ -10,16 +10,16 @@ import java.time.LocalDateTime;
 
 /**
  * Global exception handler for the application.
- * Provides consistent error responses across all controller methods.
+ * Provides standardized error responses for all controller methods across the application.
  */
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
     /**
-     * Handles TaskNotFoundException and returns a 404 Not Found response.
+     * Handles {@link TaskNotFoundException} and returns a 404 Not Found response.
      *
-     * @param exception The exception that was thrown (TaskNotFoundException).
-     * @return A ResponseEntity of ErrorResponse with error details.
+     * @param exception The thrown TaskNotFoundException
+     * @return A ResponseEntity containing an ErrorResponse with relevant error details
      */
     @ExceptionHandler(value = TaskNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleTaskNotFoundException(TaskNotFoundException exception) {
@@ -33,10 +33,10 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * Handles TaskValidationException and returns a 400 Bad Request response.
+     * Handles {@link TaskValidationException} and returns a 400 Bad Request response.
      *
-     * @param exception The exception that was thrown (TaskValidationException).
-     * @return A ResponseEntity of ErrorResponse with error details.
+     * @param exception The thrown TaskValidationException
+     * @return A ResponseEntity containing an ErrorResponse with relevant error details
      */
     @ExceptionHandler(value = TaskValidationException.class)
     public ResponseEntity<ErrorResponse> handleTaskValidationException(TaskValidationException exception) {
@@ -50,10 +50,10 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * Handles validation errors from @Valid annotations and returns field specific error messages.
+     * Handles validation errors from @Valid annotations and returns detailed error information.
      *
-     * @param exception The exception containing validation errors.
-     * @return ResponseEntity with detailed validation errors.
+     * @param exception The MethodArgumentNotValidException containing validation errors
+     * @return A ResponseEntity with a descriptive ErrorResponse for validation issues
      */
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidationExceptions(MethodArgumentNotValidException exception) {
@@ -67,9 +67,10 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * Fallback exception handler for all other exceptions.
-     * @param exception The exception that was thrown.
-     * @return ResponseEntity with generic error details.
+     * Handles all uncaught exceptions and returns a 500 Internal Server Error response.
+     *
+     * @param exception The thrown Exception
+     * @return A ResponseEntity containing a generic ErrorResponse
      */
     @ExceptionHandler(value = Exception.class)
     public ResponseEntity<ErrorResponse> handleGenericException(Exception exception) {
@@ -83,7 +84,12 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * Error response structure with timestamp, status, message and details.
+     * Error response data structure used in all error responses returned by this handler.
+     *
+     * @param status    The HTTP status code
+     * @param timestamp The time the error occurred
+     * @param message   A short error message
+     * @param details   Detailed information about the error
      */
     private record ErrorResponse(int status, LocalDateTime timestamp, String message, String details) {
     }

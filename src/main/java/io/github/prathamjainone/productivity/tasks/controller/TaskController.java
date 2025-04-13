@@ -18,7 +18,7 @@ import java.util.List;
 
 /**
  * REST controller for managing tasks in the Productivity application.
- * Provides endpoints for CRUD operations on tasks.
+ * Provides endpoints for CRUD operations on tasks including creation, retrieval, update, and deletion.
  */
 @RestController
 @RequestMapping("/api/tasks")
@@ -27,6 +27,11 @@ public class TaskController {
 
     private final TaskService taskService;
 
+    /**
+     * Constructs a TaskController with the specified task service.
+     *
+     * @param taskService the service to handle task operations
+     */
     @Autowired
     public TaskController(@Qualifier("databaseTaskService") TaskService taskService) {
         this.taskService = taskService;
@@ -35,8 +40,9 @@ public class TaskController {
     /**
      * Creates a new task.
      *
-     * @param task The task information to create
-     * @return The created task with HTTP status 201 (created)
+     * @param task The task to be created
+     * @return The created task with HTTP status 201 (Created)
+     * @throws TaskValidationException if the task data is invalid
      */
     @PostMapping
     public ResponseEntity<Task> createTask(@Valid @RequestBody Task task) throws TaskValidationException {
@@ -45,9 +51,10 @@ public class TaskController {
     }
 
     /**
-     * Retrieves all tasks from the system.
+     * Retrieves all tasks.
      *
-     * @return ResponseEntity containing a list of all tasks with HTTP status 200 (OK)
+     * @return A list of all tasks with HTTP status 200 (OK)
+     * @throws TaskNotFoundException if no tasks are found
      */
     @GetMapping
     public ResponseEntity<List<Task>> getAllTasks() throws TaskNotFoundException {
@@ -58,9 +65,9 @@ public class TaskController {
     /**
      * Retrieves a specific task by its ID.
      *
-     * @param id the unique identifier of the task
-     * @return ResponseEntity containing the task with HTTP status 200 (OK) if found,
-     * or HTTP status 404 (Not Found) if the task doesn't exist
+     * @param id The unique ID of the task
+     * @return The task if found with HTTP status 200 (OK), otherwise 404 (Not Found)
+     * @throws TaskNotFoundException if the task is not found
      */
     @GetMapping("/{id}")
     public ResponseEntity<Task> getTaskById(@PathVariable @Positive long id) throws TaskNotFoundException {
@@ -72,12 +79,12 @@ public class TaskController {
     }
 
     /**
-     * Updates the title of a specific task.
+     * Updates the title of a task.
      *
-     * @param id    the unique identifier of the task to update
-     * @param title the new title of the task (must not be blank)
-     * @return ResponseEntity containing the updated task with HTTP status 200 (OK) if found,
-     * or HTTP status 404 (Not Found) if the task doesn't exist
+     * @param id    The ID of the task to update
+     * @param title The new title
+     * @return The updated task or 404 if the task does not exist
+     * @throws TaskValidationException if the title is invalid
      */
     @PutMapping("/{id}/title")
     public ResponseEntity<Task> updateTaskTitle(
@@ -92,12 +99,12 @@ public class TaskController {
     }
 
     /**
-     * Updates the description of a specific task.
+     * Updates the description of a task.
      *
-     * @param id          the unique identifier of the task to update
-     * @param description the new description of the task
-     * @return ResponseEntity containing the updated task with HTTP status 200 (OK) if found,
-     * or HTTP status 404 (Not Found) if the task doesn't exist
+     * @param id          The ID of the task to update
+     * @param description The new description
+     * @return The updated task or 404 if the task does not exist
+     * @throws TaskValidationException if the description is invalid
      */
     @PutMapping("/{id}/description")
     public ResponseEntity<Task> updateTaskDescription(
@@ -112,12 +119,12 @@ public class TaskController {
     }
 
     /**
-     * Updates the due date of a specific task.
+     * Updates the due date of a task.
      *
-     * @param id       the unique identifier of the task to update
-     * @param dueDate the new due date of the task
-     * @return ResponseEntity containing the updated task with HTTP status 200 (OK) if found,
-     * or HTTP status 404 (Not Found) if the task doesn't exist
+     * @param id      The ID of the task to update
+     * @param dueDate The new due date
+     * @return The updated task or 404 if the task does not exist
+     * @throws TaskValidationException if the due date is invalid
      */
     @PutMapping("/{id}/dueDate")
     public ResponseEntity<Task> updateTaskDueDate(
@@ -132,12 +139,12 @@ public class TaskController {
     }
 
     /**
-     * Updates the priority of a specific task.
+     * Updates the priority of a task.
      *
-     * @param id       the unique identifier of the task to update
-     * @param priority the new priority of the task
-     * @return ResponseEntity containing the updated task with HTTP status 200 (OK) if found,
-     * or HTTP status 404 (Not Found) if the task doesn't exist
+     * @param id       The ID of the task to update
+     * @param priority The new priority
+     * @return The updated task or 404 if the task does not exist
+     * @throws TaskValidationException if the priority is invalid
      */
     @PutMapping("/{id}/priority")
     public ResponseEntity<Task> updateTaskPriority(
@@ -152,11 +159,11 @@ public class TaskController {
     }
 
     /**
-     * Deletes a specific task from the system.
+     * Deletes a task by its ID.
      *
-     * @param id the unique identifier of the task to delete
-     * @return ResponseEntity with a success message and HTTP status 200 (OK) if deleted,
-     * or an error message and HTTP status 404 (Not Found) if the task doesn't exist
+     * @param id The ID of the task to delete
+     * @return Success message with HTTP status 200 (OK), or 404 (Not Found) if task does not exist
+     * @throws TaskNotFoundException if the task is not found
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteTask(@PathVariable @Positive long id) throws TaskNotFoundException {
@@ -167,3 +174,4 @@ public class TaskController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Task not found");
     }
 }
+

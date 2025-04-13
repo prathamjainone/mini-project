@@ -11,21 +11,23 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- * A service that uses a database to store and manage task information.
- * This class implements the TaskService interface and uses a TaskRepository
- * to perform operations on the database.
+ * Service implementation for managing {@link Task} entities using a database.
+ * <p>
+ * This class interacts with the {@link TaskRepository} to perform operations like
+ * creating, retrieving, updating, and deleting tasks.
  */
 @Service
 public class DatabaseTaskService implements TaskService {
+
     /**
-     * The repository used to access the database.
+     * Repository for accessing task data in the database.
      */
     private final TaskRepository taskRepository;
 
     /**
-     * Creates a new DatabaseTaskService with the provided repository.
+     * Constructs a new {@code DatabaseTaskService} with the specified task repository.
      *
-     * @param taskRepository the repository to use for database operations
+     * @param taskRepository the task repository to be used for database operations
      */
     @Autowired
     public DatabaseTaskService(TaskRepository taskRepository) {
@@ -33,10 +35,11 @@ public class DatabaseTaskService implements TaskService {
     }
 
     /**
-     * Adds a new task to the database.
+     * Saves a new task to the database.
      *
-     * @param task the task to add
-     * @return the saved task with any database-generated values (like ID)
+     * @param task the task to be created
+     * @return the saved task, including any database-generated values like ID
+     * @throws TaskValidationException if the task is null
      */
     @Override
     public Task createTask(Task task) {
@@ -47,9 +50,10 @@ public class DatabaseTaskService implements TaskService {
     }
 
     /**
-     * Gets a list of all tasks from the database.
+     * Retrieves all tasks from the database.
      *
-     * @return a list containing all tasks
+     * @return a list of all tasks
+     * @throws TaskNotFoundException if no tasks are found
      */
     @Override
     public List<Task> getAllTasks() {
@@ -61,10 +65,11 @@ public class DatabaseTaskService implements TaskService {
     }
 
     /**
-     * Finds a task in the database using its ID.
+     * Retrieves a task by its ID.
      *
-     * @param id the ID of the task to find
-     * @return the found task
+     * @param id the ID of the task
+     * @return the task with the specified ID
+     * @throws TaskNotFoundException if the task is not found
      */
     @Override
     public Task getTaskById(long id) {
@@ -73,11 +78,12 @@ public class DatabaseTaskService implements TaskService {
     }
 
     /**
-     * Updates the title of a task in the database.
+     * Updates the title of a task.
      *
-     * @param id the ID of the task to update
+     * @param id       the ID of the task to update
      * @param newTitle the new title to set
      * @return the updated task
+     * @throws TaskValidationException if the new title is null or empty
      */
     @Override
     public Task updateTaskTitle(long id, String newTitle) {
@@ -90,11 +96,12 @@ public class DatabaseTaskService implements TaskService {
     }
 
     /**
-     * Updates the description of a task in the database.
+     * Updates the description of a task.
      *
-     * @param id the ID of the task to update
+     * @param id             the ID of the task to update
      * @param newDescription the new description to set
      * @return the updated task
+     * @throws TaskValidationException if the new description is null or empty
      */
     @Override
     public Task updateTaskDescription(long id, String newDescription) {
@@ -107,11 +114,12 @@ public class DatabaseTaskService implements TaskService {
     }
 
     /**
-     * Updates the due date of a task in the database.
+     * Updates the due date of a task.
      *
-     * @param id the ID of the task to update
-     * @param newDueDate the new due date to set
+     * @param id          the ID of the task to update
+     * @param newDueDate  the new due date to set
      * @return the updated task
+     * @throws TaskValidationException if the due date is null or not in the future
      */
     @Override
     public Task updateTaskDueDate(long id, LocalDateTime newDueDate) {
@@ -124,11 +132,12 @@ public class DatabaseTaskService implements TaskService {
     }
 
     /**
-     * Updates the priority of a task in the database.
+     * Updates the priority of a task.
      *
-     * @param id the ID of the task to update
+     * @param id          the ID of the task to update
      * @param newPriority the new priority to set
      * @return the updated task
+     * @throws TaskValidationException if the priority is null
      */
     @Override
     public Task updateTaskPriority(long id, Task.Priority newPriority) {
@@ -141,10 +150,11 @@ public class DatabaseTaskService implements TaskService {
     }
 
     /**
-     * Deletes a task from the database.
+     * Deletes a task by its ID.
      *
      * @param id the ID of the task to delete
-     * @return true if the task was deleted
+     * @return {@code true} if the task was found and deleted
+     * @throws TaskNotFoundException if the task with the given ID does not exist
      */
     @Override
     public boolean deleteTask(long id) {

@@ -3,24 +3,30 @@ package io.github.prathamjainone.productivity.tasks.service;
 import io.github.prathamjainone.productivity.tasks.model.Task;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Service class for managing Task operations in-memory.
- * Handles business logic related to Tasks using an ArrayList.
+ * In-memory implementation of the {@link TaskService} interface.
+ * <p>
+ * This service manages {@link Task} objects using a local {@link ArrayList},
+ * making it useful for testing or development environments without a database.
  */
 @Service
 public class InMemoryTaskService implements TaskService {
 
     private final List<Task> tasks;
 
+    /**
+     * Constructs a new {@code InMemoryTaskService} with an empty task list.
+     */
     public InMemoryTaskService() {
         this.tasks = new ArrayList<>();
     }
 
     /**
-     * Creates and stores a new task.
+     * Creates and stores a new task in memory.
      *
      * @param task the task to create
      * @return the created task
@@ -32,9 +38,9 @@ public class InMemoryTaskService implements TaskService {
     }
 
     /**
-     * Returns all tasks.
+     * Retrieves all stored tasks.
      *
-     * @return list of all tasks
+     * @return a list of all tasks
      */
     @Override
     public List<Task> getAllTasks() {
@@ -42,10 +48,10 @@ public class InMemoryTaskService implements TaskService {
     }
 
     /**
-     * Retrieves a task by ID.
+     * Retrieves a task by its ID.
      *
-     * @param id the task ID
-     * @return the task, or null if not found
+     * @param id the ID of the task
+     * @return the task if found, or {@code null} if not found
      */
     @Override
     public Task getTaskById(long id) {
@@ -58,11 +64,11 @@ public class InMemoryTaskService implements TaskService {
     }
 
     /**
-     * Updates the title of a task.
+     * Updates the title of the specified task.
      *
-     * @param id the task ID
-     * @param newTitle new title
-     * @return updated task or null if not found
+     * @param id       the ID of the task to update
+     * @param newTitle the new title to set
+     * @return the updated task, or {@code null} if not found
      */
     @Override
     public Task updateTaskTitle(long id, String newTitle) {
@@ -74,11 +80,11 @@ public class InMemoryTaskService implements TaskService {
     }
 
     /**
-     * Updates the description of a task.
+     * Updates the description of the specified task.
      *
-     * @param id the task ID
-     * @param newDescription new description
-     * @return updated task or null if not found
+     * @param id             the ID of the task to update
+     * @param newDescription the new description to set
+     * @return the updated task, or {@code null} if not found
      */
     @Override
     public Task updateTaskDescription(long id, String newDescription) {
@@ -90,14 +96,14 @@ public class InMemoryTaskService implements TaskService {
     }
 
     /**
-     * Updates the due date of a task.
+     * Updates the due date of the specified task.
      *
-     * @param id the task ID
-     * @param newDueDate new due date
-     * @return updated task or null if not found
+     * @param id         the ID of the task to update
+     * @param newDueDate the new due date to set
+     * @return the updated task, or {@code null} if not found
      */
     @Override
-    public Task updateTaskDueDate(long id, java.time.LocalDateTime newDueDate) {
+    public Task updateTaskDueDate(long id, LocalDateTime newDueDate) {
         Task task = getTaskById(id);
         if (task != null) {
             task.setDueDate(newDueDate);
@@ -106,11 +112,11 @@ public class InMemoryTaskService implements TaskService {
     }
 
     /**
-     * Updates the priority of a task.
+     * Updates the priority of the specified task.
      *
-     * @param id the task ID
-     * @param newPriority new priority
-     * @return updated task or null if not found
+     * @param id          the ID of the task to update
+     * @param newPriority the new priority to set
+     * @return the updated task, or {@code null} if not found
      */
     @Override
     public Task updateTaskPriority(long id, Task.Priority newPriority) {
@@ -122,10 +128,10 @@ public class InMemoryTaskService implements TaskService {
     }
 
     /**
-     * Deletes a task by ID.
+     * Deletes a task by its ID.
      *
-     * @param id the task ID
-     * @return true if deleted, false otherwise
+     * @param id the ID of the task to delete
+     * @return {@code true} if the task was found and deleted, {@code false} otherwise
      */
     @Override
     public boolean deleteTask(long id) {
