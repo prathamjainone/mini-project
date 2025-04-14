@@ -2,6 +2,7 @@ package io.github.prathamjainone.productivity.tasks.controller;
 
 import io.github.prathamjainone.productivity.tasks.model.Task;
 import io.github.prathamjainone.productivity.tasks.service.TaskService;
+import io.github.prathamjainone.productivity.tasks.service.TaskParserService;
 import io.github.prathamjainone.productivity.tasks.exceptions.TaskNotFoundException;
 import io.github.prathamjainone.productivity.tasks.exceptions.TaskValidationException;
 import jakarta.validation.Valid;
@@ -26,6 +27,7 @@ import java.util.List;
 public class TaskController {
 
     private final TaskService taskService;
+    private final TaskParserService taskParserService;
 
     /**
      * Constructs a TaskController with the specified task service.
@@ -33,8 +35,11 @@ public class TaskController {
      * @param taskService the service to handle task operations
      */
     @Autowired
-    public TaskController(@Qualifier("databaseTaskService") TaskService taskService) {
+    public TaskController(
+            @Qualifier("databaseTaskService") TaskService taskService,
+            TaskParserService taskParserService) {
         this.taskService = taskService;
+        this.taskParserService = taskParserService;
     }
 
     /**
@@ -46,7 +51,21 @@ public class TaskController {
      */
     @PostMapping
     public ResponseEntity<Task> createTask(@Valid @RequestBody Task task) throws TaskValidationException {
-        Task savedTask = taskService.createTask(task);
+        // Always parse the title as natural language
+        Task parsedTask = taskParserService.parseNaturalLanguage(task.getTitle());
+        
+        // Keep any explicitly set values from the original task
+        if (task.getDescription() != null) {
+            parsedTask.setDescription(task.getDescription());
+        }
+        if (task.getDueDate() != null) {
+            parsedTask.setDueDate(task.getDueDate());
+        }
+        if (task.getPriority() != null) {
+            parsedTask.setPriority(task.getPriority());
+        }
+        
+        Task savedTask = taskService.createTask(parsedTask);
         return new ResponseEntity<>(savedTask, HttpStatus.CREATED);
     }
 
@@ -156,6 +175,21 @@ public class TaskController {
             return ResponseEntity.ok(task);
         }
         return ResponseEntity.notFound().build();
+    }
+
+    /**
+     * Toggles the completion status of a task.
+     *
+     * @param id The ID of the task to toggle
+     * @return The updated task with HTTP status 200 (OK)
+     * @throws TaskNotFoundException if the task is not found
+     */
+    @PutMapping("/{id}/toggle")
+    public ResponseEntity<Task> toggleTaskCompletion(@PathVariable @Positive long id) throws TaskNotFoundException {
+        Task task = taskService.getTaskById(id);
+        task.setCompleted(!task.isCompleted());
+        Task updatedTask = taskService.createTask(task);
+        return ResponseEntity.ok(updatedTask);
     }
 
     /**
